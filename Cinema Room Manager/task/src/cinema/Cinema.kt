@@ -8,7 +8,7 @@ fun renderCinema(room: Array<CharArray>) {
     for (i in 0..room.lastIndex) println("${i + 1} ${room[i].joinToString(" ")}")
 }
 
-fun bookSeat(room: Array<CharArray>, stats: Array<Int>): Array<CharArray> {
+fun bookSeat(room: Array<CharArray>, stats: Array<Int>) {
     while (true) {
         val seat = arrayOf(0, 0)
         println("Enter a row number:")
@@ -18,8 +18,8 @@ fun bookSeat(room: Array<CharArray>, stats: Array<Int>): Array<CharArray> {
         print("> ")
         seat[1] = readLine()!!.toInt()
 
-        var price = if (seat[0] <= (room.lastIndex + 1) / 2) 10 else 8
-        if ((room.lastIndex + 1) * (room[0].lastIndex + 1) <= 60) price = 10
+        var price = if (seat[0] <= room.size/2) 10 else 8
+        if (room.size * room[0].size <= 60) price = 10
         println("Ticket price: $$price")
         try {
             if (room[seat[0] - 1][seat[1] - 1] == 'S') {
@@ -33,7 +33,6 @@ fun bookSeat(room: Array<CharArray>, stats: Array<Int>): Array<CharArray> {
             println("Wrong input!")
         }
     }
-    return room
 }
 
 fun maxIncome(room: Array<CharArray>): Int {
@@ -41,15 +40,13 @@ fun maxIncome(room: Array<CharArray>): Int {
     val r = room.size
     val s = room[0].size
     if (r*s <= 60) sum = 10*r*s
-    else for (i in 1..r) {
-        if (i <= r/2) sum += 10*s else sum += 8*s
-    }
+    else sum = 10*s*(r/2) + 8*s*(r-r/2)
     return sum
 }
 
 fun createRoom(dimensions: List<Int>): Array<CharArray> {
     val (r,s) = dimensions
-    val room = Array<CharArray>(r, { CharArray(s)})
+    val room = Array(r, { CharArray(s)})
     for (i in 0..room.lastIndex) {
         for (j in 0..room[i].lastIndex) room[i][j] = 'S'
     }
@@ -75,7 +72,7 @@ fun renderMenu(): Int {
 }
 
 fun renderStats(stats: Array<Int>, room: Array<CharArray>) {
-    val numOfSeats = (room.lastIndex + 1)*(room[0].lastIndex +1)
+    val numOfSeats = room.size*room[0].size
     println("Number of purchased tickets: ${stats[0]}")
     println("Percentage: ${String.format("%.2f",stats[0].toDouble()/numOfSeats*100)}%")
     println("Current income: $${stats[1]}")
@@ -83,7 +80,7 @@ fun renderStats(stats: Array<Int>, room: Array<CharArray>) {
 }
 
 fun main() {
-    var stats = arrayOf(0, 0)
+    val stats = arrayOf(0, 0)
     val room = createRoom(getDimensions())
     while(true) {
         when (renderMenu()) {
